@@ -205,15 +205,34 @@ class VaccineAlertPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Vaccine Alert'),
       ),
-      body: const Center(
-        child: Text(
-          'This is the Vaccine Alert page',
-          style: TextStyle(fontSize: 24),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Vaccine Alert'),
+                  content: const Text('Time for your next vaccine!'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Text('Check Vaccine Alert'),
         ),
       ),
     );
   }
 }
+
 
 //tips page
 class Tips extends StatelessWidget {
@@ -363,11 +382,50 @@ class ChildHealthTips extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Child Health Tips'),
       ),
-      body: const Center(
-        child: Text(
-          'This is the Child Health Tips page',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        children: const <Widget>[
+          ListTile(
+            title: Text('Healthy Diet:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Provide a balanced diet rich in fruits, vegetables, whole grains, and lean proteins to support growth and development.'),
+          ),
+          ListTile(
+            title: Text('Physical Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Encourage regular physical activity to strengthen muscles and bones and promote overall health.'),
+          ),
+          ListTile(
+            title: Text('Adequate Sleep:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Ensure your child gets enough sleep according to their age to support growth, development, and overall well-being.'),
+          ),
+          ListTile(
+            title: Text('Limit Screen Time:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Limit the amount of time your child spends on screens (TV, computer, smartphone) to promote physical activity and social interaction.'),
+          ),
+          ListTile(
+            title: Text('Hygiene:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Teach and encourage good hygiene practices, such as regular handwashing, to prevent the spread of germs and illness.'),
+          ),
+          ListTile(
+            title: Text('Regular Check-ups:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Schedule regular check-ups with a pediatrician to monitor your child\'s growth and development and address any health concerns.'),
+          ),
+          ListTile(
+            title: Text('Immunizations:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Stay up-to-date with your child\'s immunizations to protect them from serious diseases.'),
+          ),
+          ListTile(
+            title: Text('Safety:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Ensure your child wears appropriate safety gear when engaging in physical activities and teach them about road safety, fire safety, etc.'),
+          ),
+          ListTile(
+            title: Text('Emotional Well-being:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Pay attention to your child\'s emotional well-being and provide support and guidance when needed.'),
+          ),
+          ListTile(
+            title: Text('Limit Sugary Drinks and Snacks:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('Limit the consumption of sugary drinks and snacks to prevent dental issues and promote healthy eating habits.'),
+          ),
+        ],
       ),
     );
   }
@@ -397,7 +455,7 @@ class Entertainment extends StatelessWidget {
 
 //help page
 class Help extends StatelessWidget {
-  const Help({super.key});
+  const Help({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -405,11 +463,86 @@ class Help extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Help'),
       ),
-      body: const Center(
-        child: Text(
-          'This is the Help  page',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        children: const <Widget>[
+          ListTile(
+            title: Text('COVID Helpline Number:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('0471-2552056'),
+          ),
+          ListTile(
+            title: Text('Centralized helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('112'),
+          ),
+          ListTile(
+            title: Text('Police:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('112 or 100'),
+          ),
+          ListTile(
+            title: Text('Police Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('0471-324 3000/4000/5000'),
+          ),
+          ListTile(
+            title: Text('Police Message Centre:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('94 97 900000'),
+          ),
+          ListTile(
+            title: Text('Police Highway Help Line:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('9846100100'),
+          ),
+          ListTile(
+            title: Text('Fire Station:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('101'),
+          ),
+          ListTile(
+            title: Text('Ambulance:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('108'),
+          ),
+          ListTile(
+            title: Text('Women Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1091 , 181'),
+          ),
+          ListTile(
+            title: Text('Crime Stopper:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1090'),
+          ),
+          ListTile(
+            title: Text('Child Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1098'),
+          ),
+          ListTile(
+            title: Text('Highway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('9846100100'),
+          ),
+          ListTile(
+            title: Text('Railway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('9846200100'),
+          ),
+          ListTile(
+            title: Text('Flood / Disaster Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1070 , 1077'),
+          ),
+          ListTile(
+            title: Text('Anti Ragging Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1800 180 5522'),
+          ),
+          ListTile(
+            title: Text('DISHA Helpline ( Health ):', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1056'),
+          ),
+          ListTile(
+            title: Text('Government Contact Centre-Kerala (Citizen\'s Call Centre):', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('0471-155300 0471- 2335523'),
+          ),
+          ListTile(
+            title: Text('Water Supply Authority:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('0484 253 0844'),
+          ),
+          ListTile(
+            title: Text('Electricity Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text('1912'),
+          ),
+        ],
       ),
     );
   }
