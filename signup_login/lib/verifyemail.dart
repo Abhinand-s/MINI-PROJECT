@@ -27,15 +27,33 @@ class _VerifyState extends State<Verify> {
   }
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar: AppBar(title: const Text('Verification'),),
-      body: const Padding(padding: EdgeInsets.all(28.0),
-      child: Center(
-        child: Text('open your mail and click on the link provided to verify email and reload this page'),
-      ),),
-      floatingActionButton: FloatingActionButton(onPressed: (()=> reload()),
-      child: const Icon(Icons.restart_alt_rounded),),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.email, color: Colors.green, size: 50),
+                const SizedBox(height: 20),
+                const Text(
+                  'Open your mail and click on the link provided to verify email and reload this page',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                FloatingActionButton(
+                  onPressed: (() => reload()),
+                  backgroundColor: Colors.green,
+                  child: const Icon(Icons.restart_alt_rounded),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
-  
 }
