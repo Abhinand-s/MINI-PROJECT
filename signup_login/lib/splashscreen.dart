@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
@@ -34,11 +34,17 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.list, color: Colors.green, size: 50),
+                  //Image.network('https://drive.google.com/file/d/1o2OHzriD9JvcrJLgJF3hutpISozyGmqY/view?usp=sharing'), // Add your logo image inside assets/images directory
                   SizedBox(height: 20),
                   Text(
-                    "TO-DO APP",
-                    style: TextStyle(color: Colors.green, fontSize: 23),
+                    "NEST",
+                    style: TextStyle(color: const Color.fromARGB(255, 2, 7, 3), fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    "Not Just For New Born Babies..But For New Born Parents Too..",
+                    style: TextStyle(color: const Color.fromARGB(255, 3, 16, 4), fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
