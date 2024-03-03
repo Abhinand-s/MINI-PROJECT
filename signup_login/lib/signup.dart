@@ -52,6 +52,14 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //Checkbox(value: false, onChanged: (bool value) {}),
+                          Text('**password must be 8 character'),
+                        ],
+                      ),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: (() => signup()),
                   style: ElevatedButton.styleFrom(
