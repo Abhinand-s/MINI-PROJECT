@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:signup_login/Entertainment/feed.dart';
+import 'package:signup_login/help/main.dart';
+import 'package:signup_login/product/product.dart';
 import 'package:signup_login/vaccine/main.dart';
 import 'package:signup_login/weather/pages/home_page.dart';
 
@@ -58,103 +62,117 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 30),
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  body: Padding(
+    padding: const EdgeInsets.only(top: 30),
+    child: Column(
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              const Row(
                 children: <Widget>[
-                  const Row(
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                        'https://cdn-files.cloud/wp-content/blogs.dir/32/files/2018/03/9-tips-beautiful-baby-photos-aperture.jpg'),
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(
-                            'https://cdn-files.cloud/wp-content/blogs.dir/32/files/2018/03/9-tips-beautiful-baby-photos-aperture.jpg'),
+                      Text(
+                        'AMMU S ',
+                        style: TextStyle(
+                          fontFamily: 'Cupertino',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
                       ),
-                      SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'AMMU S ',
-                            style: TextStyle(
-                              fontFamily: 'Cupertino',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                            ),
-                          ),
-                          Text('Age 1 years | Female'),
-                        ],
-                      ),
+                      Text('Age 1 years | Female'),
                     ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.wind_power),
-                    onPressed: () {
-                       Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Homepage()),
-            );
-                    },
-                  ),
                 ],
               ),
-            ),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 1.0,
-                padding: const EdgeInsets.all(20.0),
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                children: <Widget>[
-                  _buildGridItem(
-                      'Alert', Icons.medical_services, Colors.purple),
-                  _buildGridItem('Entertainment', Icons.movie, Colors.red),
-                  _buildGridItem('TO-DO', Icons.list, Colors.blue),
-                  _buildGridItem('Product', Icons.shopping_cart,const Color.fromARGB(255, 247, 198, 76)),
-                  _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
-                  _buildGridItem('Help', Icons.help, Colors.green),
-                ],
+              IconButton(
+                icon: const Icon(Icons.cloud),
+                onPressed: () {
+                   Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Homepage()),
+        );
+                },
               ),
-            ),
-          ],
-          
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-                color: _selectedIndex == 0
-                    ? Colors.grey
-                    : Colors.grey), //color change currently not working
-            label: 'Home',
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 1.0,
+            padding: const EdgeInsets.all(20.0),
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
+            children: <Widget>[
+              _buildGridItem(
+                  'Alert', Icons.medical_services, Colors.purple),
+              _buildGridItem('Entertainment', Icons.movie, Colors.red),
+              _buildGridItem('TO-DO', Icons.list, Colors.blue),
+              _buildGridItem('Product', Icons.shopping_cart,const Color.fromARGB(255, 247, 198, 76)),
+              Center( // Wrap the hospital icon with a Center widget
+                child: _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
+              ),
+              //_buildGridItem('Help', Icons.help, Colors.green),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person,
-                color: _selectedIndex == 1
-                    ? Colors.grey
-                    : Colors.grey), //color change currently not working
-            label: 'Personal',
-          ),
-           const BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'Sign Out',
-          )
-          
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        ),
+      ],
+      
+    ),
+  ),
+  bottomNavigationBar: BottomNavigationBar(
+    items: <BottomNavigationBarItem>[
+      BottomNavigationBarItem(
+        icon: Icon(Icons.home,
+            color: _selectedIndex == 0
+                ? Colors.grey
+                : Colors.grey), //color change currently not working
+        label: 'Home',
       ),
-    );
+      BottomNavigationBarItem(
+        icon: Icon(Icons.person,
+            color: _selectedIndex == 1
+                ? Colors.grey
+                : Colors.grey), //color change currently not working
+        label: 'Personal',
+      ),
+       const BottomNavigationBarItem(
+        icon: Icon(Icons.logout),
+        label: 'Sign Out',
+      )
+      
+    ],
+    currentIndex: _selectedIndex,
+    onTap: _onItemTapped,
+  ),
+  floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Set the location of the FAB
+  floatingActionButton: FloatingActionButton( // Add the FAB
+    onPressed: () {
+     Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MyApp2()),
+            );
+    },
+    child: const Icon(Icons.help),
+    backgroundColor: Colors.green,
+  ),
+);
+
   }
 
   Widget _buildGridItem(String title, IconData icon, Color color) {
@@ -183,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (title == "Product") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Product()),
+              MaterialPageRoute(builder: (context) =>  MyApp3()),
             );
           }
           if (title == "Hospital") {
@@ -192,12 +210,12 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(builder: (context) => const Hospital()),
             );
           }
-          if (title == "Help") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Help()),
-            );
-          }
+          // if (title == "Help") {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const Help()),
+          //   );
+          // }
         },
         child: Center(
           child: Column(
@@ -650,99 +668,99 @@ class _ToDoListState extends State<ToDoList> {
 // }
 
 //help page
-class Help extends StatelessWidget {
-  const Help({Key? key}) : super(key: key);
+// class Help extends StatelessWidget {
+//   const Help({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        children: const <Widget>[
-          ListTile(
-            title: Text('COVID Helpline Number:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('0471-2552056'),
-          ),
-          ListTile(
-            title: Text('Centralized helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('112'),
-          ),
-          ListTile(
-            title: Text('Police:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('112 or 100'),
-          ),
-          ListTile(
-            title: Text('Police Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('0471-324 3000/4000/5000'),
-          ),
-          ListTile(
-            title: Text('Police Message Centre:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('94 97 900000'),
-          ),
-          ListTile(
-            title: Text('Police Highway Help Line:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('9846100100'),
-          ),
-          ListTile(
-            title: Text('Fire Station:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('101'),
-          ),
-          ListTile(
-            title: Text('Ambulance:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('108'),
-          ),
-          ListTile(
-            title: Text('Women Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1091 , 181'),
-          ),
-          ListTile(
-            title: Text('Crime Stopper:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1090'),
-          ),
-          ListTile(
-            title: Text('Child Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1098'),
-          ),
-          ListTile(
-            title: Text('Highway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('9846100100'),
-          ),
-          ListTile(
-            title: Text('Railway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('9846200100'),
-          ),
-          ListTile(
-            title: Text('Flood / Disaster Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1070 , 1077'),
-          ),
-          ListTile(
-            title: Text('Anti Ragging Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1800 180 5522'),
-          ),
-          ListTile(
-            title: Text('DISHA Helpline ( Health ):', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1056'),
-          ),
-          ListTile(
-            title: Text('Government Contact Centre-Kerala (Citizen\'s Call Centre):', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('0471-155300 0471- 2335523'),
-          ),
-          ListTile(
-            title: Text('Water Supply Authority:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('0484 253 0844'),
-          ),
-          ListTile(
-            title: Text('Electricity Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('1912'),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Help'),
+//       ),
+//       body: ListView(
+//         padding: const EdgeInsets.all(8),
+//         children: const <Widget>[
+//           ListTile(
+//             title: Text('COVID Helpline Number:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('0471-2552056'),
+//           ),
+//           ListTile(
+//             title: Text('Centralized helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('112'),
+//           ),
+//           ListTile(
+//             title: Text('Police:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('112 or 100'),
+//           ),
+//           ListTile(
+//             title: Text('Police Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('0471-324 3000/4000/5000'),
+//           ),
+//           ListTile(
+//             title: Text('Police Message Centre:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('94 97 900000'),
+//           ),
+//           ListTile(
+//             title: Text('Police Highway Help Line:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('9846100100'),
+//           ),
+//           ListTile(
+//             title: Text('Fire Station:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('101'),
+//           ),
+//           ListTile(
+//             title: Text('Ambulance:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('108'),
+//           ),
+//           ListTile(
+//             title: Text('Women Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1091 , 181'),
+//           ),
+//           ListTile(
+//             title: Text('Crime Stopper:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1090'),
+//           ),
+//           ListTile(
+//             title: Text('Child Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1098'),
+//           ),
+//           ListTile(
+//             title: Text('Highway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('9846100100'),
+//           ),
+//           ListTile(
+//             title: Text('Railway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('9846200100'),
+//           ),
+//           ListTile(
+//             title: Text('Flood / Disaster Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1070 , 1077'),
+//           ),
+//           ListTile(
+//             title: Text('Anti Ragging Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1800 180 5522'),
+//           ),
+//           ListTile(
+//             title: Text('DISHA Helpline ( Health ):', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1056'),
+//           ),
+//           ListTile(
+//             title: Text('Government Contact Centre-Kerala (Citizen\'s Call Centre):', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('0471-155300 0471- 2335523'),
+//           ),
+//           ListTile(
+//             title: Text('Water Supply Authority:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('0484 253 0844'),
+//           ),
+//           ListTile(
+//             title: Text('Electricity Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('1912'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 //product page
 class Product extends StatelessWidget {
@@ -766,26 +784,89 @@ class Product extends StatelessWidget {
 
 //hospital page
 class Hospital extends StatelessWidget {
-  const Hospital({super.key});
+  const Hospital({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // List of random hospital names
+    final List<String> hospitalNames = [
+      'City Hospital',
+      'Green Clinic',
+      'Health Plus',
+      'Life Care Hospital',
+      'MediCure',
+      'Wellness Center',
+      'Healing Touch',
+      'Health First',
+      'Care Hospital',
+      'Life Line'
+    ];
+
+    // List of random telephone numbers
+    final List<String> telephoneNumbers = [
+      '(123) 456-7890',
+      '(234) 567-8901',
+      '(345) 678-9012',
+      '(456) 789-0123',
+      '(567) 890-1234',
+      '(678) 901-2345',
+      '(789) 012-3456',
+      '(890) 123-4567',
+      '(901) 234-5678',
+      '(012) 345-6789'
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hospital'),
       ),
-      body: const Center(
-        child: Text(
-          'This is the Hospital  page',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: ListView.builder(
+        itemCount: hospitalNames.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.local_hospital),
+              title: Text(hospitalNames[index]),
+              subtitle: Text('Telephone: ${telephoneNumbers[index]}'),
+              trailing: IconButton(
+                icon: Icon(Icons.directions),
+                onPressed: () {
+                  // Add your logic to open directions
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class PersonalPage extends StatelessWidget {
+//personal page
+class PersonalPage extends StatefulWidget {
   const PersonalPage({Key? key}) : super(key: key);
+
+  @override
+  _PersonalPageState createState() => _PersonalPageState();
+}
+
+class _PersonalPageState extends State<PersonalPage> {
+  // List of random child names
+  final List<String> childNames = [
+    'AMMU',
+    'Emma',
+    'Noah',
+    'Olivia',
+    'William',
+    'Ava',
+    'James',
+    'Isabella',
+    'Logan',
+    'Sophia'
+  ];
+
+  // Currently selected child
+  String? selectedChild;
 
   @override
   Widget build(BuildContext context) {
@@ -794,11 +875,32 @@ class PersonalPage extends StatelessWidget {
         title: const Text('Personal'),
         automaticallyImplyLeading: false, // Remove the back button
       ),
-      body: const Center(
-        child: Text(
-          'This is the Personal page',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: Column(
+        children: <Widget>[
+          DropdownButton<String>(
+            value: selectedChild,
+            hint: const Text('Select a child'),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedChild = newValue;
+              });
+            },
+            items: childNames.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          if (selectedChild != null)
+            Text(
+              'Personal details for $selectedChild:\n'
+              'Age: ${Random().nextInt(10) + 1}\n'
+              'Height: ${Random().nextInt(50) + 50} cm\n'
+              'Weight: ${Random().nextInt(20) + 10} kg',
+              style: const TextStyle(fontSize: 24),
+            ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -820,7 +922,6 @@ class PersonalPage extends StatelessWidget {
     );
   }
 }
-
 
 
 
