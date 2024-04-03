@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:signup_login/Entertainment/feed.dart';
+import 'package:signup_login/vaccine/main.dart';
+import 'package:signup_login/weather/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -93,9 +96,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.notifications),
+                    icon: const Icon(Icons.wind_power),
                     onPressed: () {
-                      // Handle the notification button
+                       Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Homepage()),
+            );
                     },
                   ),
                 ],
@@ -110,9 +116,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisSpacing: 10.0,
                 children: <Widget>[
                   _buildGridItem(
-                      'Vaccine Alert', Icons.medical_services, Colors.purple),
+                      'Alert', Icons.medical_services, Colors.purple),
                   _buildGridItem('Entertainment', Icons.movie, Colors.red),
-                  _buildGridItem('Tips', Icons.lightbulb, Colors.blue),
+                  _buildGridItem('TO-DO', Icons.list, Colors.blue),
                   _buildGridItem('Product', Icons.shopping_cart,const Color.fromARGB(255, 247, 198, 76)),
                   _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
                   _buildGridItem('Help', Icons.help, Colors.green),
@@ -156,22 +162,22 @@ class _MyHomePageState extends State<MyHomePage> {
       color: color,
       child: InkWell(
         onTap: () {
-          if (title == 'Vaccine Alert') {
+          if (title == 'Alert') {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const VaccineAlertPage()),
+              MaterialPageRoute(builder: (context) => const MyApp1()),
             );
           }
-          if (title == "Tips") {
+          if (title == "TO-DO") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Tips()),
+              MaterialPageRoute(builder: (context) => ToDoList()),
             );
           }
           if (title == "Entertainment") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Entertainment()),
+              MaterialPageRoute(builder: (context) => const Feed()),
             );
           }
           if (title == "Product") {
@@ -211,376 +217,437 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //vaccine page
 
-class VaccineAlertPage extends StatefulWidget {
-  const VaccineAlertPage({super.key});
+// class VaccineAlertPage extends StatefulWidget {
+//   const VaccineAlertPage({super.key});
 
+//   @override
+//   // ignore: library_private_types_in_public_api
+//   _VaccineAlertPageState createState() => _VaccineAlertPageState();
+// }
+
+// class _VaccineAlertPageState extends State<VaccineAlertPage> {
+//   List<TextEditingController> vaccineControllers = [TextEditingController()];
+//   List<TextEditingController> dateControllers = [TextEditingController()];
+//   List<TextEditingController> commentControllers = [TextEditingController()];
+//   List<bool> isEditing = [false];
+//   DateTime selectedDate = DateTime.now();
+
+//   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: selectedDate,
+//       firstDate: DateTime(2015, 8),
+//       lastDate: DateTime(2101),
+//     );
+//     if (picked != null && picked != selectedDate) {
+//       setState(() {
+//         selectedDate = picked;
+//         controller.text = "${selectedDate.toLocal()}".split(' ')[0];
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Vaccine Alert'),
+//         backgroundColor: Colors.lightBlue[100],
+//       ),
+//       body: SingleChildScrollView(
+//         child: Center(
+//           child: SizedBox(
+//             height: 330,
+//             child: PageView.builder(
+//               itemCount: vaccineControllers.length,
+//               itemBuilder: (context, index) {
+//                 return Padding(
+//                   padding: const EdgeInsets.all(10),
+//                   child: SizedBox(
+//                     width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
+//                     child: Card(
+//                       color: Colors.lightBlue[50],
+//                       elevation: 5,
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(15),
+//                       ),
+//                       child: Padding(
+//                         padding: const EdgeInsets.all(10),
+//                         child: Stack(
+//                           children: <Widget>[
+//                             Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: <Widget>[
+//                                 TextField(
+//                                   controller: vaccineControllers[index],
+//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//                                   decoration: const InputDecoration(labelText: 'Name of Vaccine'),
+//                                   enabled: isEditing[index],
+//                                 ),
+//                                 const SizedBox(height: 10),
+//                                 TextField(
+//                                   controller: dateControllers[index],
+//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//                                   decoration: const InputDecoration(labelText: 'Date of Vaccination'),
+//                                   onTap: () {
+//                                     _selectDate(context, dateControllers[index]);
+//                                   },
+//                                   enabled: isEditing[index],
+//                                 ),
+//                                 const SizedBox(height: 10),
+//                                 TextField(
+//                                   controller: commentControllers[index],
+//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//                                   decoration: const InputDecoration(labelText: 'Comments'),
+//                                   enabled: isEditing[index],
+//                                 ),
+//                                 const Spacer(),
+//                                 ElevatedButton(
+//                                   onPressed: () {
+//                                     // Implement your appointment checking logic here
+//                                   },
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: Colors.lightBlue[100],
+//                                   ),
+//                                   child: const Text('Check Appointment'),
+//                                 ),
+//                               ],
+//                             ),
+//                             Positioned(
+//                               right: 0,
+//                               bottom: 0,
+//                               child: Row(
+//                                 children: [
+//                                   IconButton(
+//                                     icon: Icon(isEditing[index] ? Icons.check : Icons.edit),
+//                                     color: Colors.lightBlue,
+//                                     onPressed: () {
+//                                       setState(() {
+//                                         isEditing[index] = !isEditing[index];
+//                                       });
+//                                     },
+//                                   ),
+//                                   IconButton(
+//                                     icon: const Icon(Icons.delete),
+//                                     color: Colors.red,
+//                                     onPressed: () {
+//                                       setState(() {
+//                                         vaccineControllers.removeAt(index);
+//                                         dateControllers.removeAt(index);
+//                                         commentControllers.removeAt(index);
+//                                         isEditing.removeAt(index);
+//                                       });
+//                                     },
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ),
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           setState(() {
+//             vaccineControllers.add(TextEditingController());
+//             dateControllers.add(TextEditingController());
+//             commentControllers.add(TextEditingController());
+//             isEditing.add(false);
+//           });
+//         },
+//         backgroundColor: Colors.lightBlue[100],
+//         child: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+// }
+
+//ToDo page
+class ToDoList extends StatefulWidget {
   @override
-  // ignore: library_private_types_in_public_api
-  _VaccineAlertPageState createState() => _VaccineAlertPageState();
+  _ToDoListState createState() => _ToDoListState();
 }
 
-class _VaccineAlertPageState extends State<VaccineAlertPage> {
-  List<TextEditingController> vaccineControllers = [TextEditingController()];
-  List<TextEditingController> dateControllers = [TextEditingController()];
-  List<TextEditingController> commentControllers = [TextEditingController()];
-  List<bool> isEditing = [false];
-  DateTime selectedDate = DateTime.now();
-
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2015, 8),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        controller.text = "${selectedDate.toLocal()}".split(' ')[0];
-      });
-    }
+class _ToDoListState extends State<ToDoList> {
+  final List<Map<String, dynamic>> _toDoList = [];
+  final TextEditingController _textFieldController = TextEditingController();
+  signout()async{
+    await FirebaseAuth.instance.signOut();
   }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vaccine Alert'),
-        backgroundColor: Colors.lightBlue[100],
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            height: 330,
-            child: PageView.builder(
-              itemCount: vaccineControllers.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
-                    child: Card(
-                      color: Colors.lightBlue[50],
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Stack(
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                TextField(
-                                  controller: vaccineControllers[index],
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  decoration: const InputDecoration(labelText: 'Name of Vaccine'),
-                                  enabled: isEditing[index],
-                                ),
-                                const SizedBox(height: 10),
-                                TextField(
-                                  controller: dateControllers[index],
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  decoration: const InputDecoration(labelText: 'Date of Vaccination'),
-                                  onTap: () {
-                                    _selectDate(context, dateControllers[index]);
-                                  },
-                                  enabled: isEditing[index],
-                                ),
-                                const SizedBox(height: 10),
-                                TextField(
-                                  controller: commentControllers[index],
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  decoration: const InputDecoration(labelText: 'Comments'),
-                                  enabled: isEditing[index],
-                                ),
-                                const Spacer(),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Implement your appointment checking logic here
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.lightBlue[100],
-                                  ),
-                                  child: const Text('Check Appointment'),
-                                ),
-                              ],
-                            ),
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(isEditing[index] ? Icons.check : Icons.edit),
-                                    color: Colors.lightBlue,
-                                    onPressed: () {
-                                      setState(() {
-                                        isEditing[index] = !isEditing[index];
-                                      });
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    color: Colors.red,
-                                    onPressed: () {
-                                      setState(() {
-                                        vaccineControllers.removeAt(index);
-                                        dateControllers.removeAt(index);
-                                        commentControllers.removeAt(index);
-                                        isEditing.removeAt(index);
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            vaccineControllers.add(TextEditingController());
-            dateControllers.add(TextEditingController());
-            commentControllers.add(TextEditingController());
-            isEditing.add(false);
-          });
-        },
-        backgroundColor: Colors.lightBlue[100],
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-//tips page
-class Tips extends StatelessWidget {
-  const Tips({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tips'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+    return Container(
+      color: Colors.orange[100],
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(title: const Text('To-Do List'),backgroundColor: Colors.lightGreen,),
+        body: ListView(children: _getItems()),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ParentingTips()),
-                );
-              },
-              child: const Card(
-                color: Colors.lightBlueAccent,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.family_restroom, size: 48.0, color: Colors.white),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Parenting',
-                          style: TextStyle(fontSize: 24, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            FloatingActionButton(
+              onPressed: () => _displayDialog(context, addTodoItem: _addTodoItem),
+              tooltip: 'Add Item',
+              child: Icon(Icons.add),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ChildHealthTips()),
-                );
-              },
-              child: const Card(
-                color: Colors.pinkAccent,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.local_hospital, size: 48.0, color: Colors.white),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Child Health',
-                          style: TextStyle(fontSize: 24, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(width: 10), // Add some spacing between the buttons
+            // FloatingActionButton(
+            //    onPressed: (()=>signout()),
+            //   tooltip: 'Sign Out',
+            //   child: Icon(Icons.logout),
+            // ),
           ],
         ),
       ),
     );
   }
-}
-//subclass parentingtips
-class ParentingTips extends StatelessWidget {
-  const ParentingTips({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Parenting Tips'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: const <Widget>[
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Show love and affection: Children thrive on love and affection. Make sure to express your love for them regularly through words and actions.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Set a good example: Children learn by observing their parents. Be a role model by demonstrating the behavior you want to see in them.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Be consistent: Establish clear rules and expectations, and be consistent in enforcing them. This helps children feel secure and understand boundaries.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Communicate effectively: Listen to your child\'s thoughts and feelings, and communicate openly and honestly with them. Encourage them to do the same.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Encourage independence: Allow your child to make age-appropriate decisions and learn from their mistakes. This helps them develop independence and self-confidence.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Provide structure and routine: Children thrive on routine. Establishing a regular schedule can help them feel more secure and make transitions easier.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Encourage healthy habits: Teach your child the importance of healthy eating, exercise, and good hygiene habits. Set a good example by practicing these habits yourself.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Spend quality time together: Make time for one-on-one activities with your child. This helps strengthen your bond and creates lasting memories.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Be patient and understanding: Parenting can be challenging, and children will make mistakes. Be patient and understanding, and use mistakes as opportunities for learning and growth.'),
-            ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text('Seek support when needed: Parenting can be overwhelming at times. Don\'t hesitate to seek support from family, friends, or a professional if you need help or advice.'),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _addTodoItem(String title) {
+    setState(() {
+      _toDoList.add({"title": title, "done": false});
+    });
+    _textFieldController.clear();
   }
-}
 
-//subclass childcare tips
-class ChildHealthTips extends StatelessWidget {
-  const ChildHealthTips({Key? key}) : super(key: key);
+  void _updateTodoItem(Map<String, dynamic> item, String title) {
+    setState(() {
+      item["title"] = title;
+    });
+    _textFieldController.clear();
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Child Health Tips'),
+  Widget _buildToDoItem(Map<String, dynamic> item) {
+    return ListTile(
+      title: Text(
+        item["title"],
+        style: item["done"]
+            ? TextStyle(
+                decoration: TextDecoration.lineThrough,
+                color: Colors.grey,
+              )
+            : null,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        children: const <Widget>[
-          ListTile(
-            title: Text('Healthy Diet:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Provide a balanced diet rich in fruits, vegetables, whole grains, and lean proteins to support growth and development.'),
+      trailing: Wrap(
+        spacing: 12,
+        children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.blue),
+            onPressed: () => _displayDialog(context, 
+                addTodoItem: (title) => _updateTodoItem(item, title),
+                initialText: item["title"]),
           ),
-          ListTile(
-            title: Text('Physical Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Encourage regular physical activity to strengthen muscles and bones and promote overall health.'),
+          IconButton(
+            icon: item["done"] ? Icon(Icons.undo, color: Colors.orange) : Icon(Icons.done, color: Colors.green),
+            onPressed: () => _toggleDone(item),
           ),
-          ListTile(
-            title: Text('Adequate Sleep:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Ensure your child gets enough sleep according to their age to support growth, development, and overall well-being.'),
-          ),
-          ListTile(
-            title: Text('Limit Screen Time:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Limit the amount of time your child spends on screens (TV, computer, smartphone) to promote physical activity and social interaction.'),
-          ),
-          ListTile(
-            title: Text('Hygiene:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Teach and encourage good hygiene practices, such as regular handwashing, to prevent the spread of germs and illness.'),
-          ),
-          ListTile(
-            title: Text('Regular Check-ups:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Schedule regular check-ups with a pediatrician to monitor your child\'s growth and development and address any health concerns.'),
-          ),
-          ListTile(
-            title: Text('Immunizations:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Stay up-to-date with your child\'s immunizations to protect them from serious diseases.'),
-          ),
-          ListTile(
-            title: Text('Safety:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Ensure your child wears appropriate safety gear when engaging in physical activities and teach them about road safety, fire safety, etc.'),
-          ),
-          ListTile(
-            title: Text('Emotional Well-being:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Pay attention to your child\'s emotional well-being and provide support and guidance when needed.'),
-          ),
-          ListTile(
-            title: Text('Limit Sugary Drinks and Snacks:', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text('Limit the consumption of sugary drinks and snacks to prevent dental issues and promote healthy eating habits.'),
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
+            onPressed: () => _deleteTodoItem(item),
           ),
         ],
       ),
     );
   }
+
+  void _deleteTodoItem(Map<String, dynamic> item) {
+    setState(() {
+      _toDoList.remove(item);
+    });
+  }
+
+  void _toggleDone(Map<String, dynamic> item) {
+    setState(() {
+      item["done"] = !item["done"];
+    });
+  }
+
+  Future<Future> _displayDialog(BuildContext context, {required Function(String) addTodoItem, String initialText = ''}) async {
+    _textFieldController.text = initialText;
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Add a task to your list'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: const InputDecoration(hintText: 'Enter task here'),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('SAVE'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  addTodoItem(_textFieldController.text);
+                },
+              ),
+              TextButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
+
+  List<Widget> _getItems() {
+    final List<Widget> _todoWidgets = <Widget>[];
+    for (Map<String, dynamic> item in _toDoList) {
+      _todoWidgets.add(_buildToDoItem(item));
+    }
+    return _todoWidgets;
+  }
 }
+
+//subclass parentingtips
+// class ParentingTips extends StatelessWidget {
+//   const ParentingTips({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Parenting Tips'),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(8.0),
+//         child: ListView(
+//           children: const <Widget>[
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Show love and affection: Children thrive on love and affection. Make sure to express your love for them regularly through words and actions.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Set a good example: Children learn by observing their parents. Be a role model by demonstrating the behavior you want to see in them.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Be consistent: Establish clear rules and expectations, and be consistent in enforcing them. This helps children feel secure and understand boundaries.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Communicate effectively: Listen to your child\'s thoughts and feelings, and communicate openly and honestly with them. Encourage them to do the same.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Encourage independence: Allow your child to make age-appropriate decisions and learn from their mistakes. This helps them develop independence and self-confidence.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Provide structure and routine: Children thrive on routine. Establishing a regular schedule can help them feel more secure and make transitions easier.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Encourage healthy habits: Teach your child the importance of healthy eating, exercise, and good hygiene habits. Set a good example by practicing these habits yourself.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Spend quality time together: Make time for one-on-one activities with your child. This helps strengthen your bond and creates lasting memories.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Be patient and understanding: Parenting can be challenging, and children will make mistakes. Be patient and understanding, and use mistakes as opportunities for learning and growth.'),
+//             ),
+//             ListTile(
+//               leading: Icon(Icons.star),
+//               title: Text('Seek support when needed: Parenting can be overwhelming at times. Don\'t hesitate to seek support from family, friends, or a professional if you need help or advice.'),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+//subclass childcare tips
+// class ChildHealthTips extends StatelessWidget {
+//   const ChildHealthTips({Key? key}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Child Health Tips'),
+//       ),
+//       body: ListView(
+//         padding: const EdgeInsets.all(8),
+//         children: const <Widget>[
+//           ListTile(
+//             title: Text('Healthy Diet:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Provide a balanced diet rich in fruits, vegetables, whole grains, and lean proteins to support growth and development.'),
+//           ),
+//           ListTile(
+//             title: Text('Physical Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Encourage regular physical activity to strengthen muscles and bones and promote overall health.'),
+//           ),
+//           ListTile(
+//             title: Text('Adequate Sleep:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Ensure your child gets enough sleep according to their age to support growth, development, and overall well-being.'),
+//           ),
+//           ListTile(
+//             title: Text('Limit Screen Time:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Limit the amount of time your child spends on screens (TV, computer, smartphone) to promote physical activity and social interaction.'),
+//           ),
+//           ListTile(
+//             title: Text('Hygiene:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Teach and encourage good hygiene practices, such as regular handwashing, to prevent the spread of germs and illness.'),
+//           ),
+//           ListTile(
+//             title: Text('Regular Check-ups:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Schedule regular check-ups with a pediatrician to monitor your child\'s growth and development and address any health concerns.'),
+//           ),
+//           ListTile(
+//             title: Text('Immunizations:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Stay up-to-date with your child\'s immunizations to protect them from serious diseases.'),
+//           ),
+//           ListTile(
+//             title: Text('Safety:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Ensure your child wears appropriate safety gear when engaging in physical activities and teach them about road safety, fire safety, etc.'),
+//           ),
+//           ListTile(
+//             title: Text('Emotional Well-being:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Pay attention to your child\'s emotional well-being and provide support and guidance when needed.'),
+//           ),
+//           ListTile(
+//             title: Text('Limit Sugary Drinks and Snacks:', style: TextStyle(fontWeight: FontWeight.bold)),
+//             subtitle: Text('Limit the consumption of sugary drinks and snacks to prevent dental issues and promote healthy eating habits.'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 
 
 //entertainment page
-class Entertainment extends StatelessWidget {
-  const Entertainment({super.key});
+// class Entertainment extends StatelessWidget {
+//   const Entertainment({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Entertainment'),
-      ),
-      body: const Center(
-        child: Text(
-          'This is the Entertainment  page',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Entertainment'),
+//       ),
+//       body: const Center(
+//         child: Text(
+//           'This is the Entertainment  page',
+//           style: TextStyle(fontSize: 24),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 //help page
 class Help extends StatelessWidget {
