@@ -29,7 +29,7 @@ class Homepage extends StatelessWidget {
         onTap: () {
           //go to entry page
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const Newentry()));
+              MaterialPageRoute(builder: (context) => const NewEntry()));
         },
         child: SizedBox(
           width: 18.w,

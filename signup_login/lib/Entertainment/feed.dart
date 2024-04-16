@@ -8,7 +8,11 @@ final videoUrls = [
   'https://youtu.be/TtkWVhmAdn4?si=4vBC6q4tRL6yaskM',
   'https://youtu.be/AfXyOjh2vHo?si=tsMaA1me-h4EDxXV',
   'https://youtu.be/hq3yfQnllfQ?si=5pSzFrfJJaosGXD3',
-  'https://youtu.be/x4kdosN-zVk?si=R57hFKKLugT_VyXn'
+  'https://youtu.be/x4kdosN-zVk?si=R57hFKKLugT_VyXn',
+  'https://www.youtube.com/watch?v=t0Q2otsqC4I',
+  'https://www.youtube.com/watch?v=1_OzBniN4Ho',
+  'https://youtu.be/9hrTXLwlqK8'
+
 ];
 
 class Feed extends StatelessWidget {

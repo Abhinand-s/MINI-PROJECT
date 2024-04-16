@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:signup_login/Entertainment/feed.dart';
+import 'package:signup_login/appointment/main.dart';
+import 'package:signup_login/appointment/repositories/doctor_repository.dart';
 import 'package:signup_login/help/main.dart';
 import 'package:signup_login/product/product.dart';
 import 'package:signup_login/vaccine/main.dart';
@@ -124,9 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
               _buildGridItem('Entertainment', Icons.movie, Colors.red),
               _buildGridItem('TO-DO', Icons.list, Colors.blue),
               _buildGridItem('Product', Icons.shopping_cart,const Color.fromARGB(255, 247, 198, 76)),
-              Center( // Wrap the hospital icon with a Center widget
-                child: _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
-              ),
+              // Wrap the hospital icon with a Center widget
+               _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
+               _buildGridItem('Appointment', Icons.local_hospital, Colors.orange),
+              
               //_buildGridItem('Help', Icons.help, Colors.green),
             ],
           ),
@@ -210,12 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(builder: (context) => const Hospital()),
             );
           }
-          // if (title == "Help") {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => const Help()),
-          //   );
-          // }
+          if (title == "Appointment") {
+            final doctorRepository = DoctorRepository();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>  AppScreen(doctorRepository: doctorRepository,)),
+            );
+          }
         },
         child: Center(
           child: Column(

@@ -121,6 +121,8 @@ class _MyAppState extends State<MyApp1> {
             
             
             home: const Homepage(),
+            debugShowCheckedModeBanner: false,
+            
           );
         },
       ),

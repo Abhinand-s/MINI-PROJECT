@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:signup_login/vaccine/constants.dart';
 import 'package:signup_login/vaccine/global_bloc.dart';
+import 'package:signup_login/vaccine/main.dart';
 import 'package:signup_login/vaccine/models/medicine.dart';
 import 'package:provider/provider.dart';
+//import 'package:signup_login/vaccine/pages/home_page.dart';
 import 'package:sizer/sizer.dart';
 
 class MedicineDetail extends StatefulWidget {
@@ -86,7 +88,16 @@ class _MedicineDetailState extends State<MedicineDetail> {
                   onPressed: () {
                     //global bloc to delete medicine
                     _globalBloc.removeMedicine(widget.medicine);
-                    Navigator.popUntil(context, ModalRoute.withName('/'));
+                    //Navigator.popUntil(context, ModalRoute.withName('/'));
+                    Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => MyApp1()),
+);
+
+                   
+                    
+
+
                   },
                   child: Text(
                     'OK',
