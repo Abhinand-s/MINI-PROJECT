@@ -198,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (title == "Entertainment") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const Feed()),
+              MaterialPageRoute(builder: (context) =>  CategoryList()),
             );
           }
           if (title == "Product") {

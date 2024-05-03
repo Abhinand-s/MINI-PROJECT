@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:signup_login/wrapper.dart';
+import 'package:signup_login/login.dart'; // import your login page
+import 'dart:async';
 
 class Verify extends StatefulWidget {
   const Verify({super.key});
@@ -11,20 +13,55 @@ class Verify extends StatefulWidget {
 }
 
 class _VerifyState extends State<Verify> {
+  Timer? _timer;
+  int _start = 30;
+
   @override
   void initState(){
     sendverifylink();
+    startTimer();
     super.initState();
   }
-  sendverifylink()async{
+
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (_start == 0) {
+        setState(() {
+          timer.cancel();
+          reload();
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  sendverifylink() async {
     final user = FirebaseAuth.instance.currentUser!;
-    await user.sendEmailVerification().then((value)=>{
+    await user.sendEmailVerification().then((value) => {
       Get.snackbar('Link sent', 'A Link has been send to your email',margin: const EdgeInsets.all(30),snackPosition: SnackPosition.BOTTOM)
     });
   }
-  reload()async{
-    await FirebaseAuth.instance.currentUser!.reload().then((value) => {Get.offAll(const Wrapper())});
+
+  reload() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    if (!user.emailVerified) {
+      await user.delete();
+      Get.offAll(Login()); // assuming LoginPage is your login page
+    } else {
+      await user.reload();
+      Get.offAll(const Wrapper());
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +81,10 @@ class _VerifyState extends State<Verify> {
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 20),
+                Text(
+                  '$_start',
+                  style: TextStyle(fontSize: 48),
+                ),
                 FloatingActionButton(
                   onPressed: (() => reload()),
                   backgroundColor: Colors.green,
