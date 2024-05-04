@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:signup_login/forget.dart';
 import 'package:signup_login/signup.dart';
 
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -15,6 +16,7 @@ class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   bool isloading = false;
+ 
 
   signin() async {
     setState(() {
@@ -32,6 +34,23 @@ class _LoginState extends State<Login> {
       isloading = false;
     });
   }
+
+  // Future<UserCredential> signInWithGoogle() async {
+  //   // Trigger the authentication flow
+  //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  //   // Obtain the auth details from the request
+  //   final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+  //   // Create a new credential
+  //   final credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth.accessToken,
+  //     idToken: googleAuth.idToken,
+  //   );
+
+  //   // Once signed in, return the UserCredential
+  //   return await FirebaseAuth.instance.signInWithCredential(credential);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +103,14 @@ class _LoginState extends State<Login> {
                         ),
                         child: const Text('Login'),
                       ),
+                      const SizedBox(height: 20),
+                      // ElevatedButton(
+                      //   onPressed: signInWithGoogle,
+                      //   style: ElevatedButton.styleFrom(
+                      //     foregroundColor: Colors.white, backgroundColor: Colors.green,
+                      //   ),
+                      //   child: const Text('Sign In with Google'),
+                      // ),
                       const SizedBox(height: 20),
                       TextButton(
                         onPressed: (() => Get.to(const Forgot())),

@@ -204,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (title == "Product") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  MyApp3()),
+              MaterialPageRoute(builder: (context) => CategoryList1()),
             );
           }
           if (title == "Hospital") {

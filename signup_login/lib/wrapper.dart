@@ -20,7 +20,7 @@ class _WrapperState extends State<Wrapper> {
         if(snapshot.hasData){
          print(snapshot.data);
          if(snapshot.data!.emailVerified){
-          return const MyApp();
+          return MyApp();
          }else{
           return const Verify();
          }
