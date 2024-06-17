@@ -1,21 +1,25 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:signup_login/Entertainment/feed.dart';
 import 'package:signup_login/appointment/main.dart';
 import 'package:signup_login/appointment/repositories/doctor_repository.dart';
 import 'package:signup_login/help/main.dart';
+import 'package:signup_login/model_child.dart';
 import 'package:signup_login/product/product.dart';
 import 'package:signup_login/vaccine/main.dart';
 import 'package:signup_login/weather/pages/home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyApp4());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp4 extends StatelessWidget {
+  const MyApp4({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,28 +28,31 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Home'),
+      home: const MyHomePage(title: 'Home', childName: '',),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title, required this.childName}) : super(key: key);
 
   final String title;
-  
+  final String childName;
 
   @override
-  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
- signout()async{
+  final ChildModel _childModel = ChildModel();
+  Map<String, dynamic>? childDetails;
+
+  signout() async {
     await FirebaseAuth.instance.signOut();
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -62,120 +69,134 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchChildDetails();
+  }
+
+  Future<void> fetchChildDetails() async {
+    final snapshot = await _childModel.fetchChildren().first;
+    final childDoc = snapshot.docs.firstWhere((doc) => doc['name'] == widget.childName);
+
+    setState(() {
+      childDetails = childDoc.data() as Map<String, dynamic>;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-  body: Padding(
-    padding: const EdgeInsets.only(top: 30),
-    child: Column(
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              const Row(
+      
+      body: childDetails == null
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: Column(
                 children: <Widget>[
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(
-                        'https://cdn-files.cloud/wp-content/blogs.dir/32/files/2018/03/9-tips-beautiful-baby-photos-aperture.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'AMMU S ',
-                        style: TextStyle(
-                          fontFamily: 'Cupertino',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0,
+                  // Displaying child's profile section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage: NetworkImage(childDetails!['image']),
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  childDetails!['name'],
+                                  style: const TextStyle(
+                                    fontFamily: 'Cupertino',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0,
+                                  ),
+                                ),
+                                Text('DOB: ${childDetails!['dob']}'),
+                                Text('Height: ${childDetails!['height']}'),
+                                Text('Weight: ${childDetails!['weight']}'),
+                                Text('Blood Group: ${childDetails!['blood_group']}'),
+                              ],
+                            ),
+                          ],
                         ),
-                      ),
-                      Text('Age 1 years | Female'),
-                    ],
+                          IconButton(
+                          icon: const Icon(Icons.cloud, color: Colors.blue),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const Homepage()),
+                            );
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.0,
+                      padding: const EdgeInsets.all(20.0),
+                      mainAxisSpacing: 10.0,
+                      crossAxisSpacing: 10.0,
+                      children: <Widget>[
+                        _buildGridItem('Alert', Icons.medical_services, Colors.purple),
+                        _buildGridItem('Entertainment', Icons.movie, Colors.red),
+                        _buildGridItem('TO-DO', Icons.list, Colors.blue),
+                        _buildGridItem('Product', Icons.shopping_cart, const Color.fromARGB(255, 247, 198, 76)),
+                        _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
+                        _buildGridItem('Appointment', Icons.local_hospital, Colors.orange),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.cloud),
-                onPressed: () {
-                   Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const Homepage()),
-        );
-                },
-              ),
-            ],
+            ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: _selectedIndex == 0 ? Colors.grey : Colors.grey,
+            ),
+            label: 'Home',
           ),
-        ),
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: 1.0,
-            padding: const EdgeInsets.all(20.0),
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
-            children: <Widget>[
-              _buildGridItem(
-                  'Alert', Icons.medical_services, Colors.purple),
-              _buildGridItem('Entertainment', Icons.movie, Colors.red),
-              _buildGridItem('TO-DO', Icons.list, Colors.blue),
-              _buildGridItem('Product', Icons.shopping_cart,const Color.fromARGB(255, 247, 198, 76)),
-              // Wrap the hospital icon with a Center widget
-               _buildGridItem('Hospital', Icons.local_hospital, Colors.pink),
-               _buildGridItem('Appointment', Icons.local_hospital, Colors.orange),
-              
-              //_buildGridItem('Help', Icons.help, Colors.green),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+              color: _selectedIndex == 1 ? Colors.grey : Colors.grey,
+            ),
+            label: 'Personal',
           ),
-        ),
-      ],
-      
-    ),
-  ),
-  bottomNavigationBar: BottomNavigationBar(
-    items: <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home,
-            color: _selectedIndex == 0
-                ? Colors.grey
-                : Colors.grey), //color change currently not working
-        label: 'Home',
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Sign Out',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.person,
-            color: _selectedIndex == 1
-                ? Colors.grey
-                : Colors.grey), //color change currently not working
-        label: 'Personal',
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyApp2()),
+          );
+        },
+        child: const Icon(Icons.help),
+        backgroundColor: Colors.green,
       ),
-       const BottomNavigationBarItem(
-        icon: Icon(Icons.logout),
-        label: 'Sign Out',
-      )
-      
-    ],
-    currentIndex: _selectedIndex,
-    onTap: _onItemTapped,
-  ),
-  floatingActionButtonLocation: FloatingActionButtonLocation.endFloat, // Set the location of the FAB
-  floatingActionButton: FloatingActionButton( // Add the FAB
-    onPressed: () {
-     Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyApp2()),
-            );
-    },
-    child: const Icon(Icons.help),
-    backgroundColor: Colors.green,
-  ),
-);
-
+    );
   }
 
   Widget _buildGridItem(String title, IconData icon, Color color) {
@@ -186,19 +207,19 @@ class _MyHomePageState extends State<MyHomePage> {
           if (title == 'Alert') {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const MyApp1()),
+             MaterialPageRoute(builder: (context) => AlertPage(childName: childDetails!['name'])),
             );
           }
           if (title == "TO-DO") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ToDoList()),
+               MaterialPageRoute(builder: (context) => ToDoList(childName: childDetails!['name'])), // Pass the child name,
             );
           }
           if (title == "Entertainment") {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  CategoryList()),
+              MaterialPageRoute(builder: (context) => CategoryList()),
             );
           }
           if (title == "Product") {
@@ -217,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
             final doctorRepository = DoctorRepository();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  AppScreen(doctorRepository: doctorRepository,)),
+              MaterialPageRoute(builder: (context) => AppScreen(doctorRepository: doctorRepository)),
             );
           }
         },
@@ -235,195 +256,399 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// use all pages in single dart file last stage it may change to different file
+class AlertPage extends StatelessWidget {
+  final String childName;
 
-//vaccine page
+  AlertPage({required this.childName});
 
-// class VaccineAlertPage extends StatefulWidget {
-//   const VaccineAlertPage({super.key});
+  final List<Map<String, String>> vaccines = [
+    {"name": "BCG", "age": "At birth", "details": "Details about BCG"},
+    {"name": "Hepatitis B", "age": "At birth, 1 month, 6 months", "details": "Details about Hepatitis B"},
+    {"name": "Polio", "age": "2 months, 4 months, 6-18 months", "details": "Details about Polio"},
+    {"name": "DTaP", "age": "2 months, 4 months, 6 months, 15-18 months", "details": "Details about DTaP"},
+    {"name": "Hib", "age": "2 months, 4 months, 6 months, 12-15 months", "details": "Details about Hib"},
+    {"name": "PCV", "age": "2 months, 4 months, 6 months, 12-15 months", "details": "Details about PCV"},
+    {"name": "Rotavirus", "age": "2 months, 4 months, 6 months", "details": "Details about Rotavirus"},
+    {"name": "MMR", "age": "12-15 months", "details": "Details about MMR"},
+    {"name": "Varicella", "age": "12-15 months", "details": "Details about Varicella"},
+    {"name": "Hepatitis A", "age": "12-23 months", "details": "Details about Hepatitis A"},
+  ];
 
-//   @override
-//   // ignore: library_private_types_in_public_api
-//   _VaccineAlertPageState createState() => _VaccineAlertPageState();
-// }
+  final List<Map<String, String>> medicines = [
+    {"name": "Paracetamol", "usage": "Fever and pain relief", "details": "Details about Paracetamol"},
+    {"name": "Ibuprofen", "usage": "Pain and inflammation", "details": "Details about Ibuprofen"},
+    {"name": "Amoxicillin", "usage": "Bacterial infections", "details": "Details about Amoxicillin"},
+  ];
 
-// class _VaccineAlertPageState extends State<VaccineAlertPage> {
-//   List<TextEditingController> vaccineControllers = [TextEditingController()];
-//   List<TextEditingController> dateControllers = [TextEditingController()];
-//   List<TextEditingController> commentControllers = [TextEditingController()];
-//   List<bool> isEditing = [false];
-//   DateTime selectedDate = DateTime.now();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Alert - Essential Vaccines and Medicines"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            const Text(
+              "Essential Vaccines",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            ...vaccines.map((vaccine) => ListTile(
+                  title: Text(vaccine["name"]!),
+                  subtitle: Text("Recommended Age: ${vaccine["age"]!}"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VaccineDetailsPage(
+                          childName: childName,
+                          vaccineName: vaccine["name"]!,
+                          recommendedAge: vaccine["age"]!,
+                          additionalDetails: vaccine["details"]!,
+                        ),
+                      ),
+                    );
+                  },
+                )),
+            const SizedBox(height: 20),
+            const Text(
+              "Essential Medicines",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            ...medicines.map((medicine) => ListTile(
+                  title: Text(medicine["name"]!),
+                  subtitle: Text("Usage: ${medicine["usage"]!}"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MedicineDetailsPage(
+                          childName: childName,
+                          medicineName: medicine["name"]!,
+                          usage: medicine["usage"]!,
+                          additionalDetails: medicine["details"]!,
+                        ),
+                      ),
+                    );
+                  },
+                )),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyApp1(childName: childName)),
+                );
+              },
+              child: const Text("Add Medicine Reminder"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-//   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
-//     final DateTime? picked = await showDatePicker(
-//       context: context,
-//       initialDate: selectedDate,
-//       firstDate: DateTime(2015, 8),
-//       lastDate: DateTime(2101),
-//     );
-//     if (picked != null && picked != selectedDate) {
-//       setState(() {
-//         selectedDate = picked;
-//         controller.text = "${selectedDate.toLocal()}".split(' ')[0];
-//       });
-//     }
-//   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Vaccine Alert'),
-//         backgroundColor: Colors.lightBlue[100],
-//       ),
-//       body: SingleChildScrollView(
-//         child: Center(
-//           child: SizedBox(
-//             height: 330,
-//             child: PageView.builder(
-//               itemCount: vaccineControllers.length,
-//               itemBuilder: (context, index) {
-//                 return Padding(
-//                   padding: const EdgeInsets.all(10),
-//                   child: SizedBox(
-//                     width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
-//                     child: Card(
-//                       color: Colors.lightBlue[50],
-//                       elevation: 5,
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(15),
-//                       ),
-//                       child: Padding(
-//                         padding: const EdgeInsets.all(10),
-//                         child: Stack(
-//                           children: <Widget>[
-//                             Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: <Widget>[
-//                                 TextField(
-//                                   controller: vaccineControllers[index],
-//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                                   decoration: const InputDecoration(labelText: 'Name of Vaccine'),
-//                                   enabled: isEditing[index],
-//                                 ),
-//                                 const SizedBox(height: 10),
-//                                 TextField(
-//                                   controller: dateControllers[index],
-//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                                   decoration: const InputDecoration(labelText: 'Date of Vaccination'),
-//                                   onTap: () {
-//                                     _selectDate(context, dateControllers[index]);
-//                                   },
-//                                   enabled: isEditing[index],
-//                                 ),
-//                                 const SizedBox(height: 10),
-//                                 TextField(
-//                                   controller: commentControllers[index],
-//                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                                   decoration: const InputDecoration(labelText: 'Comments'),
-//                                   enabled: isEditing[index],
-//                                 ),
-//                                 const Spacer(),
-//                                 ElevatedButton(
-//                                   onPressed: () {
-//                                     // Implement your appointment checking logic here
-//                                   },
-//                                   style: ElevatedButton.styleFrom(
-//                                     backgroundColor: Colors.lightBlue[100],
-//                                   ),
-//                                   child: const Text('Check Appointment'),
-//                                 ),
-//                               ],
-//                             ),
-//                             Positioned(
-//                               right: 0,
-//                               bottom: 0,
-//                               child: Row(
-//                                 children: [
-//                                   IconButton(
-//                                     icon: Icon(isEditing[index] ? Icons.check : Icons.edit),
-//                                     color: Colors.lightBlue,
-//                                     onPressed: () {
-//                                       setState(() {
-//                                         isEditing[index] = !isEditing[index];
-//                                       });
-//                                     },
-//                                   ),
-//                                   IconButton(
-//                                     icon: const Icon(Icons.delete),
-//                                     color: Colors.red,
-//                                     onPressed: () {
-//                                       setState(() {
-//                                         vaccineControllers.removeAt(index);
-//                                         dateControllers.removeAt(index);
-//                                         commentControllers.removeAt(index);
-//                                         isEditing.removeAt(index);
-//                                       });
-//                                     },
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           setState(() {
-//             vaccineControllers.add(TextEditingController());
-//             dateControllers.add(TextEditingController());
-//             commentControllers.add(TextEditingController());
-//             isEditing.add(false);
-//           });
-//         },
-//         backgroundColor: Colors.lightBlue[100],
-//         child: const Icon(Icons.add),
-//       ),
-//     );
-//   }
-// }
+
+class MedicineDetailsPage extends StatefulWidget {
+  final String childName;
+  final String medicineName;
+  final String usage;
+  final String additionalDetails;
+
+  MedicineDetailsPage({
+    required this.childName,
+    required this.medicineName,
+    required this.usage,
+    required this.additionalDetails,
+  });
+
+  @override
+  _MedicineDetailsPageState createState() => _MedicineDetailsPageState();
+}
+
+class _MedicineDetailsPageState extends State<MedicineDetailsPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isReminderSet = false;
+  bool _isReminderDeleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkReminder();
+  }
+
+  void _checkReminder() async {
+    DocumentSnapshot doc = await _firestore.collection('reminders').doc(widget.childName).get();
+    setState(() {
+      _isReminderSet = doc.exists;
+    });
+  }
+
+  void _setReminder() async {
+    await _firestore.collection('reminders').doc(widget.childName).set({
+      'medicine': widget.medicineName,
+      'usage': widget.usage,
+      'additionalDetails': widget.additionalDetails,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    setState(() {
+      _isReminderSet = true;
+      _isReminderDeleted = false;
+    });
+  }
+
+  void _deleteReminder() async {
+    await _firestore.collection('reminders').doc(widget.childName).delete();
+
+    setState(() {
+      _isReminderSet = false;
+      _isReminderDeleted = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.medicineName),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.medicineName,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text("Usage: ${widget.usage}"),
+            SizedBox(height: 10),
+            Text("Additional Details: ${widget.additionalDetails}"),
+            Spacer(),
+            if (_isReminderSet)
+              Text(
+                "Reminder is set",
+                style: TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            if (_isReminderDeleted)
+              Text(
+                "Reminder is deleted",
+                style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _setReminder,
+              child: Text("Set Reminder"),
+            ),
+            ElevatedButton(
+              onPressed: _deleteReminder,
+              child: Text("Delete Reminder"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VaccineDetailsPage extends StatefulWidget {
+  final String childName;
+  final String vaccineName;
+  final String recommendedAge;
+  final String additionalDetails;
+
+  VaccineDetailsPage({
+    required this.childName,
+    required this.vaccineName,
+    required this.recommendedAge,
+    required this.additionalDetails,
+  });
+
+  @override
+  _VaccineDetailsPageState createState() => _VaccineDetailsPageState();
+}
+
+class _VaccineDetailsPageState extends State<VaccineDetailsPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isReminderSet = false;
+  bool _isReminderDeleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkReminder();
+  }
+
+  void _checkReminder() async {
+    DocumentSnapshot doc = await _firestore.collection('vaccine_reminders').doc('${widget.childName}-${widget.vaccineName}').get();
+    setState(() {
+      _isReminderSet = doc.exists;
+    });
+  }
+
+  void _setReminder() async {
+    await _firestore.collection('vaccine_reminders').doc('${widget.childName}-${widget.vaccineName}').set({
+      'vaccine': widget.vaccineName,
+      'recommendedAge': widget.recommendedAge,
+      'additionalDetails': widget.additionalDetails,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    setState(() {
+      _isReminderSet = true;
+      _isReminderDeleted = false;
+    });
+  }
+
+  void _deleteReminder() async {
+    await _firestore.collection('vaccine_reminders').doc('${widget.childName}-${widget.vaccineName}').delete();
+
+    setState(() {
+      _isReminderSet = false;
+      _isReminderDeleted = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.vaccineName),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.vaccineName,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text("Recommended Age: ${widget.recommendedAge}"),
+            const SizedBox(height: 10),
+            Text("Additional Details: ${widget.additionalDetails}"),
+            const Spacer(),
+            if (_isReminderSet)
+              Text(
+                "Reminder is set",
+                style: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            if (_isReminderDeleted)
+              Text(
+                "Reminder is deleted",
+                style: const TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _setReminder,
+              child: const Text("Set Reminder"),
+            ),
+            ElevatedButton(
+              onPressed: _deleteReminder,
+              child: const Text("Delete Reminder"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
 
 //ToDo page
+
+
 class ToDoList extends StatefulWidget {
+  final String childName;
+
+  ToDoList({required this.childName});
+
   @override
   _ToDoListState createState() => _ToDoListState();
 }
 
 class _ToDoListState extends State<ToDoList> {
-  final List<Map<String, dynamic>> _toDoList = [];
   final TextEditingController _textFieldController = TextEditingController();
-  signout()async{
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late CollectionReference _toDoCollection;
+
+  @override
+  void initState() {
+    super.initState();
+    _toDoCollection = FirebaseFirestore.instance
+        .collection('todos')
+        .doc(_auth.currentUser!.uid)
+        .collection(widget.childName); // Use child's name as the collection key
+  }
+
+  signout() async {
     await FirebaseAuth.instance.signOut();
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.orange[100],
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('To-Do List'),backgroundColor: Colors.lightGreen,),
-        body: ListView(children: _getItems()),
+        appBar: AppBar(
+          title: const Text('To-Do List'),
+          backgroundColor: Colors.lightGreen,
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: _toDoCollection.snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Text('Something went wrong');
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading");
+            }
+
+            final List<DocumentSnapshot> _toDoList = snapshot.data!.docs;
+
+            return ListView(
+              children: _toDoList.map((DocumentSnapshot document) {
+                Map<String, dynamic> item = document.data() as Map<String, dynamic>;
+                return _buildToDoItem(document, item);
+              }).toList(),
+            );
+          },
+        ),
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             FloatingActionButton(
-              onPressed: () => _displayDialog(context, addTodoItem: _addTodoItem),
+              onPressed: () => _displayDialog(context, addTodoItem: (title) => _addTodoItem(title)),
               tooltip: 'Add Item',
               child: Icon(Icons.add),
             ),
-            SizedBox(width: 10), // Add some spacing between the buttons
+            // Uncomment the following lines if you want to include the sign-out button
+            // SizedBox(width: 10), // Add some spacing between the buttons
             // FloatingActionButton(
-            //    onPressed: (()=>signout()),
-            //   tooltip: 'Sign Out',
-            //   child: Icon(Icons.logout),
+            //    onPressed: (() => signout()),
+            //    tooltip: 'Sign Out',
+            //    child: Icon(Icons.logout),
             // ),
           ],
         ),
@@ -431,25 +656,24 @@ class _ToDoListState extends State<ToDoList> {
     );
   }
 
-  void _addTodoItem(String title) {
-    setState(() {
-      _toDoList.add({"title": title, "done": false});
+  Future<void> _addTodoItem(String title) {
+    return _toDoCollection.add({
+      "title": title,
+      "done": false,
     });
-    _textFieldController.clear();
   }
 
-  void _updateTodoItem(Map<String, dynamic> item, String title) {
-    setState(() {
-      item["title"] = title;
+  Future<void> _updateTodoItem(DocumentSnapshot item, String title) {
+    return _toDoCollection.doc(item.id).update({
+      "title": title,
     });
-    _textFieldController.clear();
   }
 
-  Widget _buildToDoItem(Map<String, dynamic> item) {
+  Widget _buildToDoItem(DocumentSnapshot item, Map<String, dynamic> data) {
     return ListTile(
       title: Text(
-        item["title"],
-        style: item["done"]
+        data["title"],
+        style: data["done"]
             ? TextStyle(
                 decoration: TextDecoration.lineThrough,
                 color: Colors.grey,
@@ -461,13 +685,13 @@ class _ToDoListState extends State<ToDoList> {
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.edit, color: Colors.blue),
-            onPressed: () => _displayDialog(context, 
+            onPressed: () => _displayDialog(context,
                 addTodoItem: (title) => _updateTodoItem(item, title),
-                initialText: item["title"]),
+                initialText: data["title"]),
           ),
           IconButton(
-            icon: item["done"] ? Icon(Icons.undo, color: Colors.orange) : Icon(Icons.done, color: Colors.green),
-            onPressed: () => _toggleDone(item),
+            icon: data["done"] ? Icon(Icons.undo, color: Colors.orange) : Icon(Icons.done, color: Colors.green),
+            onPressed: () => _toggleDone(item, data),
           ),
           IconButton(
             icon: Icon(Icons.delete, color: Colors.red),
@@ -478,294 +702,49 @@ class _ToDoListState extends State<ToDoList> {
     );
   }
 
-  void _deleteTodoItem(Map<String, dynamic> item) {
-    setState(() {
-      _toDoList.remove(item);
-    });
+  Future<void> _deleteTodoItem(DocumentSnapshot item) {
+    return _toDoCollection.doc(item.id).delete();
   }
 
-  void _toggleDone(Map<String, dynamic> item) {
-    setState(() {
-      item["done"] = !item["done"];
+  Future<void> _toggleDone(DocumentSnapshot item, Map<String, dynamic> data) {
+    return _toDoCollection.doc(item.id).update({
+      "done": !data["done"],
     });
   }
 
   Future<Future> _displayDialog(BuildContext context, {required Function(String) addTodoItem, String initialText = ''}) async {
     _textFieldController.text = initialText;
     return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Add a task to your list'),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: const InputDecoration(hintText: 'Enter task here'),
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add a task to your list'),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: const InputDecoration(hintText: 'Enter task here'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('SAVE'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                addTodoItem(_textFieldController.text);
+              },
             ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('SAVE'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  addTodoItem(_textFieldController.text);
-                },
-              ),
-              TextButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
-  }
-
-  List<Widget> _getItems() {
-    final List<Widget> _todoWidgets = <Widget>[];
-    for (Map<String, dynamic> item in _toDoList) {
-      _todoWidgets.add(_buildToDoItem(item));
-    }
-    return _todoWidgets;
+            TextButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
-//subclass parentingtips
-// class ParentingTips extends StatelessWidget {
-//   const ParentingTips({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Parenting Tips'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: ListView(
-//           children: const <Widget>[
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Show love and affection: Children thrive on love and affection. Make sure to express your love for them regularly through words and actions.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Set a good example: Children learn by observing their parents. Be a role model by demonstrating the behavior you want to see in them.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Be consistent: Establish clear rules and expectations, and be consistent in enforcing them. This helps children feel secure and understand boundaries.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Communicate effectively: Listen to your child\'s thoughts and feelings, and communicate openly and honestly with them. Encourage them to do the same.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Encourage independence: Allow your child to make age-appropriate decisions and learn from their mistakes. This helps them develop independence and self-confidence.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Provide structure and routine: Children thrive on routine. Establishing a regular schedule can help them feel more secure and make transitions easier.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Encourage healthy habits: Teach your child the importance of healthy eating, exercise, and good hygiene habits. Set a good example by practicing these habits yourself.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Spend quality time together: Make time for one-on-one activities with your child. This helps strengthen your bond and creates lasting memories.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Be patient and understanding: Parenting can be challenging, and children will make mistakes. Be patient and understanding, and use mistakes as opportunities for learning and growth.'),
-//             ),
-//             ListTile(
-//               leading: Icon(Icons.star),
-//               title: Text('Seek support when needed: Parenting can be overwhelming at times. Don\'t hesitate to seek support from family, friends, or a professional if you need help or advice.'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-//subclass childcare tips
-// class ChildHealthTips extends StatelessWidget {
-//   const ChildHealthTips({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Child Health Tips'),
-//       ),
-//       body: ListView(
-//         padding: const EdgeInsets.all(8),
-//         children: const <Widget>[
-//           ListTile(
-//             title: Text('Healthy Diet:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Provide a balanced diet rich in fruits, vegetables, whole grains, and lean proteins to support growth and development.'),
-//           ),
-//           ListTile(
-//             title: Text('Physical Activity:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Encourage regular physical activity to strengthen muscles and bones and promote overall health.'),
-//           ),
-//           ListTile(
-//             title: Text('Adequate Sleep:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Ensure your child gets enough sleep according to their age to support growth, development, and overall well-being.'),
-//           ),
-//           ListTile(
-//             title: Text('Limit Screen Time:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Limit the amount of time your child spends on screens (TV, computer, smartphone) to promote physical activity and social interaction.'),
-//           ),
-//           ListTile(
-//             title: Text('Hygiene:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Teach and encourage good hygiene practices, such as regular handwashing, to prevent the spread of germs and illness.'),
-//           ),
-//           ListTile(
-//             title: Text('Regular Check-ups:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Schedule regular check-ups with a pediatrician to monitor your child\'s growth and development and address any health concerns.'),
-//           ),
-//           ListTile(
-//             title: Text('Immunizations:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Stay up-to-date with your child\'s immunizations to protect them from serious diseases.'),
-//           ),
-//           ListTile(
-//             title: Text('Safety:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Ensure your child wears appropriate safety gear when engaging in physical activities and teach them about road safety, fire safety, etc.'),
-//           ),
-//           ListTile(
-//             title: Text('Emotional Well-being:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Pay attention to your child\'s emotional well-being and provide support and guidance when needed.'),
-//           ),
-//           ListTile(
-//             title: Text('Limit Sugary Drinks and Snacks:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('Limit the consumption of sugary drinks and snacks to prevent dental issues and promote healthy eating habits.'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-
-
-//entertainment page
-// class Entertainment extends StatelessWidget {
-//   const Entertainment({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Entertainment'),
-//       ),
-//       body: const Center(
-//         child: Text(
-//           'This is the Entertainment  page',
-//           style: TextStyle(fontSize: 24),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-//help page
-// class Help extends StatelessWidget {
-//   const Help({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Help'),
-//       ),
-//       body: ListView(
-//         padding: const EdgeInsets.all(8),
-//         children: const <Widget>[
-//           ListTile(
-//             title: Text('COVID Helpline Number:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('0471-2552056'),
-//           ),
-//           ListTile(
-//             title: Text('Centralized helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('112'),
-//           ),
-//           ListTile(
-//             title: Text('Police:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('112 or 100'),
-//           ),
-//           ListTile(
-//             title: Text('Police Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('0471-324 3000/4000/5000'),
-//           ),
-//           ListTile(
-//             title: Text('Police Message Centre:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('94 97 900000'),
-//           ),
-//           ListTile(
-//             title: Text('Police Highway Help Line:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('9846100100'),
-//           ),
-//           ListTile(
-//             title: Text('Fire Station:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('101'),
-//           ),
-//           ListTile(
-//             title: Text('Ambulance:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('108'),
-//           ),
-//           ListTile(
-//             title: Text('Women Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1091 , 181'),
-//           ),
-//           ListTile(
-//             title: Text('Crime Stopper:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1090'),
-//           ),
-//           ListTile(
-//             title: Text('Child Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1098'),
-//           ),
-//           ListTile(
-//             title: Text('Highway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('9846100100'),
-//           ),
-//           ListTile(
-//             title: Text('Railway Alert:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('9846200100'),
-//           ),
-//           ListTile(
-//             title: Text('Flood / Disaster Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1070 , 1077'),
-//           ),
-//           ListTile(
-//             title: Text('Anti Ragging Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1800 180 5522'),
-//           ),
-//           ListTile(
-//             title: Text('DISHA Helpline ( Health ):', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1056'),
-//           ),
-//           ListTile(
-//             title: Text('Government Contact Centre-Kerala (Citizen\'s Call Centre):', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('0471-155300 0471- 2335523'),
-//           ),
-//           ListTile(
-//             title: Text('Water Supply Authority:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('0484 253 0844'),
-//           ),
-//           ListTile(
-//             title: Text('Electricity Helpline:', style: TextStyle(fontWeight: FontWeight.bold)),
-//             subtitle: Text('1912'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
+         
 //product page
 class Product extends StatelessWidget {
   const Product({super.key});
@@ -787,6 +766,9 @@ class Product extends StatelessWidget {
 }
 
 //hospital page
+
+
+
 class Hospital extends StatelessWidget {
   const Hospital({Key? key}) : super(key: key);
 
@@ -835,7 +817,15 @@ class Hospital extends StatelessWidget {
               trailing: IconButton(
                 icon: Icon(Icons.directions),
                 onPressed: () {
-                  // Add your logic to open directions
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HospitalDetails(
+                        name: hospitalNames[index],
+                        telephone: telephoneNumbers[index],
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
@@ -845,6 +835,74 @@ class Hospital extends StatelessWidget {
     );
   }
 }
+
+// Function to generate a random double between two values
+double getRandomDouble(double min, double max) {
+  final Random random = Random();
+  return min + random.nextDouble() * (max - min);
+}
+
+class HospitalDetails extends StatelessWidget {
+  final String name;
+  final String telephone;
+
+  const HospitalDetails({Key? key, required this.name, required this.telephone}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Generate random latitude and longitude for the hospital
+    double latitude = getRandomDouble(37.7, 37.8); // Example latitude range for San Francisco
+    double longitude = getRandomDouble(-122.5, -122.4); // Example longitude range for San Francisco
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(name),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Hospital Details',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text('Name: $name', style: TextStyle(fontSize: 16)),
+            Text('Telephone: $telephone', style: TextStyle(fontSize: 16)),
+            SizedBox(height: 20),
+            Text(
+              'Directions to the Hospital',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            // Display the map with the random location
+            Expanded(
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(latitude, longitude),
+                  zoom: 14.0,
+                ),
+                markers: {
+                  Marker(
+                    markerId: MarkerId(name),
+                    position: LatLng(latitude, longitude),
+                    infoWindow: InfoWindow(title: name),
+                  ),
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
 
 //personal page
 class PersonalPage extends StatefulWidget {

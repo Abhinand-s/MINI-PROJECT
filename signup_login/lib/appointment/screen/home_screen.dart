@@ -1,8 +1,7 @@
 // ignore: file_names
+import 'package:flutter/services.dart';
 import 'package:signup_login/appointment/state/home/home_bloc.dart';
-import 'package:signup_login/appointment/widget/avatars/circle_avatar_with_text_label.dart';
-import 'package:signup_login/appointment/widget/bottom_nav_bar/main_nav_bar.dart';
-import 'package:signup_login/appointment/widget/cards/appointment_preview_card.dart';
+
 import 'package:signup_login/appointment/widget/list_title/doctor_list_title.dart';
 import 'package:signup_login/appointment/widget/title/section_title.dart';
 //import 'package:flutter/foundation.dart';
@@ -27,9 +26,16 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     //create the homeview ui
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
+        
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            SystemNavigator.pop(); // This will force quit the app
+          },
+        ),
+      
         toolbarHeight: 80,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,67 +48,8 @@ class HomeView extends StatelessWidget {
             const SizedBox(
               height: 4.0,
             ),
-            Text(
-              'Abhi',
-              style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 4.0,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: colorScheme.secondary,
-                ),
-                const SizedBox(
-                  width: 4.0,
-                ),
-                Text(
-                  'Dubai,UAE',
-                  style: textTheme.bodySmall!
-                      .copyWith(color: colorScheme.secondary),
-                ),
-                const SizedBox(
-                  width: 4.0,
-                ),
-                Icon(
-                  Icons.expand_more,
-                  color: colorScheme.secondary,
-                )
-              ],
-            )
           ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.notifications_outlined)),
-          const SizedBox(
-            width: 8.0,
-          )
-        ],
-        bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(64.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    hintText: 'search for doctors....',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: Container(
-                      margin: const EdgeInsets.all(4.0),
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: colorScheme.onSurfaceVariant,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Icon(
-                        Icons.filter_alt_outlined,
-                        color: colorScheme.surfaceVariant,
-                      ),
-                    )),
-              ),
-            )),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
@@ -117,14 +64,7 @@ class HomeView extends StatelessWidget {
               padding: EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  _DoctorCategories(),
-                  SizedBox(
-                    height: 24.0,
-                  ),
-                  _MySchedule(),
-                  SizedBox(
-                    height: 24.0,
-                  ),
+                  
                   _NearbyDoctor()
                 ],
               ),
@@ -136,7 +76,7 @@ class HomeView extends StatelessWidget {
           }
         },
       ),
-      bottomNavigationBar: const MainNavBar(),
+      
     );
   }
 }
@@ -182,55 +122,55 @@ class _NearbyDoctor extends StatelessWidget {
   }
 }
 
-class _MySchedule extends StatelessWidget {
-  const _MySchedule({super.key});
+// class _MySchedule extends StatelessWidget {
+//   const _MySchedule({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        return Column(
-          children: [
-            SectionTitle(
-              title: 'My Schedule',
-              action: 'See all',
-              onPressed: () {},
-            ),
-            AppointmentPreviewCard(appointment: state.myappointment.firstOrNull)
-          ],
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<HomeBloc, HomeState>(
+//       builder: (context, state) {
+//         return Column(
+//           children: [
+//             SectionTitle(
+//               title: 'My Schedule',
+//               action: 'See all',
+//               onPressed: () {},
+//             ),
+//             AppointmentPreviewCard(appointment: state.myappointment.firstOrNull)
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
 
-class _DoctorCategories extends StatelessWidget {
-  const _DoctorCategories();
+// class _DoctorCategories extends StatelessWidget {
+//   const _DoctorCategories();
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        return Column(
-          children: [
-            SectionTitle(
-              title: 'Categories',
-              action: 'See all',
-              onPressed: () {},
-            ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: state.doctorCategories
-                    //take 5 could be added in the bloc calculation
-                    .take(5)
-                    .map((category) => Expanded(
-                          child: CircleAvatarWithTextLabel(
-                              icon: category.icon, label: category.name),
-                        ))
-                    .toList())
-          ],
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<HomeBloc, HomeState>(
+//       builder: (context, state) {
+//         return Column(
+//           children: [
+//             SectionTitle(
+//               title: 'Categories',
+//               action: 'See all',
+//               onPressed: () {},
+//             ),
+//             Row(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 children: state.doctorCategories
+//                     //take 5 could be added in the bloc calculation
+//                     .take(5)
+//                     .map((category) => Expanded(
+//                           child: CircleAvatarWithTextLabel(
+//                               icon: category.icon, label: category.name),
+//                         ))
+//                     .toList())
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }

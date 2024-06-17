@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:signup_login/homepage.dart';
+import 'package:signup_login/addpage.dart';
+//import 'package:signup_login/homepage.dart';
 import 'package:signup_login/login.dart';
 import 'package:signup_login/verifyemail.dart';
 
@@ -20,7 +21,7 @@ class _WrapperState extends State<Wrapper> {
         if(snapshot.hasData){
          print(snapshot.data);
          if(snapshot.data!.emailVerified){
-          return MyApp();
+          return Child();
          }else{
           return const Verify();
          }
