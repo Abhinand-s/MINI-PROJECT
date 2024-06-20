@@ -1,85 +1,143 @@
-import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:signup_login/forget.dart';
+import 'package:signup_login/signup.dart';
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+
+class Login extends StatefulWidget {
+  const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  bool isloading = false;
+ 
+
+  signin() async {
+    setState(() {
+      isloading = true;
+    });
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email.text, password: password.text);
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('error msg', e.code,backgroundColor: Colors.white);
+    } catch (e) {
+      Get.snackbar('error msg', e.toString(),backgroundColor: Colors.white);
+    }
+    setState(() {
+      isloading = false;
+    });
+  }
+
+  // Future<UserCredential> signInWithGoogle() async {
+  //   // Trigger the authentication flow
+  //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  //   // Obtain the auth details from the request
+  //   final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+  //   // Create a new credential
+  //   final credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth.accessToken,
+  //     idToken: googleAuth.idToken,
+  //   );
+
+  //   // Once signed in, return the UserCredential
+  //   return await FirebaseAuth.instance.signInWithCredential(credential);
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 244, 34, 34),
-      body: Center(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              width: MediaQuery.of(context).size.width * 0.8,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  width: 1.5,
-                  color: Colors.white.withOpacity(0.2),
-                ),
-              ),
+    return isloading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Login",
-                      style: TextStyle(color: Colors.white, fontSize: 30),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    const TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Enter username:',
-                        labelStyle: TextStyle(color: Colors.white),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.person, color: Colors.green, size: 50),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: email,
+                        decoration: const InputDecoration(
+                          hintText: 'Username',
+                          prefixIcon: Icon(Icons.person_outline, color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    const TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        labelStyle: TextStyle(color: Colors.white),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: password,
+                         obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Password',
+                          prefixIcon: Icon(Icons.lock_outline, color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                      const SizedBox(height: 20),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //Checkbox(value: false, onChanged: (bool value) {}),
+                          Text('**password must be 8 character'),
+                        ],
                       ),
-                      child: const Text('Sign In', style: TextStyle(color: Colors.white)),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      " -------- Or continue with --------",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(height: 20),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(Icons.account_circle, color: Colors.white),
-                        Icon(Icons.account_circle, color: Colors.white),
-                        Icon(Icons.account_circle, color: Colors.white),
-                      ],
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: (() => signin()),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: Colors.green,
+                        ),
+                        child: const Text('Login'),
+                      ),
+                      const SizedBox(height: 20),
+                      // ElevatedButton(
+                      //   onPressed: signInWithGoogle,
+                      //   style: ElevatedButton.styleFrom(
+                      //     foregroundColor: Colors.white, backgroundColor: Colors.green,
+                      //   ),
+                      //   child: const Text('Sign In with Google'),
+                      // ),
+                      const SizedBox(height: 20),
+                      TextButton(
+                        onPressed: (() => Get.to(const Forgot())),
+                        child: const Text('Forgot your password?'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Don't have an account?"),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: (() => Get.to(const Signup())),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: Colors.green,
+                    ),
+                    child: const Text('Sign up'),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 }

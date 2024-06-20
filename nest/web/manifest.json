@@ -1,6 +1,6 @@
 {
-    "name": "nest",
-    "short_name": "nest",
+    "name": "signup_login",
+    "short_name": "signup_login",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
